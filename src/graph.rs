@@ -6,9 +6,26 @@ pub struct Graph {
     nodes: Vec<Rc<Graph>>,
 }
 
+impl Graph {
+    fn get_nodes(&self) -> Vec<&Graph> {
+        let mut nodes = vec![self];
+        for i in &self.nodes {
+            for j in i.get_nodes() {
+                nodes.push(j);
+            }
+        }
+        nodes
+    }
+}
+
 impl fmt::Display for Graph {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.value)
+        let nodes = self.get_nodes();
+        let mut values = vec![];
+        for node in nodes {
+            values.push(node.value);
+        }
+        write!(f, "{:?}", values)
     }
 }
 
