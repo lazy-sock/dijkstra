@@ -30,19 +30,24 @@ impl fmt::Display for Graph {
     }
 }
 
-pub fn get_random_graph() -> Graph {
+pub fn get_random_graph(root_value: Option<i32>) -> Graph {
+    // root_value is an optional parameter
     let mut root = Graph {
-        value: 42,
+        value: root_value.unwrap_or(42),
         nodes: vec![],
     };
 
-    let mut rng = rand::random_range(0..10);
+    let number_of_nodes = rand::random_range(0..10);
 
-    for i in 0..rng {
-        let node = Graph {
-            value: i,
+    for _ in 0..number_of_nodes {
+        let mut node = Graph {
+            value: rand::random_range(0..1000),
             nodes: vec![],
         };
+        let has_children = rand::random_bool(0.2);
+        if has_children {
+            node = get_random_graph(Some(node.value)); // can sometimes produce stack overflow
+        }
         root.nodes.push(Rc::from(node));
     }
 
