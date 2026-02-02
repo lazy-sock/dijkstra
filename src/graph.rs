@@ -1,3 +1,4 @@
+use rand::prelude::*;
 use std::fmt;
 use std::rc::Rc;
 
@@ -35,7 +36,9 @@ pub fn get_random_graph() -> Graph {
         nodes: vec![],
     };
 
-    for i in 0..5 {
+    let mut rng = rand::random_range(0..10);
+
+    for i in 0..rng {
         let node = Graph {
             value: i,
             nodes: vec![],
