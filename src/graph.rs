@@ -1,7 +1,7 @@
 use std::fmt;
 
 pub struct Graph {
-    matrix: Vec<Vec<i32>>,
+    pub matrix: Vec<Vec<i32>>,
 }
 
 impl fmt::Display for Graph {
@@ -22,10 +22,14 @@ impl fmt::Display for Graph {
 pub fn get_random_graph() -> Graph {
     let size = rand::random_range(0..10);
     let mut matrix = vec![];
-    for _ in 0..size {
+    for i in 0..size {
         let mut row = vec![];
-        for _ in 0..size {
-            row.push(rand::random_range(0..10));
+        for j in 0..size {
+            if i == j {
+                row.push(0);
+            } else {
+                row.push(rand::random_range(0..10));
+            }
         }
         matrix.push(row);
     }
