@@ -33,3 +33,14 @@ fn dijkstra(graph: Graph, source: i32) -> Vec<i32> {
 }
 
 mod graph;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_dijkstra() {
+        let matrix = vec![vec![0, 2], vec![2, 0]];
+        assert_eq!(dijkstra(Graph { matrix }, 0), [0, 2]);
+    }
+}
