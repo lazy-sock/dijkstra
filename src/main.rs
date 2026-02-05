@@ -1,30 +1,58 @@
 use crate::graph::Graph;
 use crate::graph::get_random_graph;
+use std::cmp::Ordering;
+use std::collections::BinaryHeap;
 
 fn main() {
     let graph = get_random_graph();
     println!("{}", graph);
-    println!("{:?}", dijkstra(graph, 0));
+    println!("{:?}", dijkstra(&graph, 0));
 }
 
-fn dijkstra(graph: Graph, source: i32) -> Vec<i32> {
-    let mut dist = vec![]; // current discovered cost of getting to every node
-    let mut unvisited: Vec<i32> = vec![];
-    for i in 0..graph.matrix.len() {
-        dist.push(i32::MAX);
-        unvisited.push(i as i32);
+#[derive(Eq, PartialEq)]
+struct State {
+    cost: i32,
+    node: usize,
+}
+
+impl Ord for State {
+    fn cmp(&self, other: &Self) -> Ordering {
+        other.cost.cmp(&self.cost) // reverse for min-heap
     }
-    dist[source as usize] = 0;
-    while !unvisited.is_empty() {
-        unvisited.sort_by_key(|&node| dist[node as usize]);
-        let u = unvisited.pop();
-        for (index, edge) in graph.matrix[u.unwrap() as usize].iter().enumerate() {
-            if *edge == 0 {
-                continue;
-            }
-            let alt = edge + dist[u.unwrap() as usize];
-            if alt < dist[index] {
-                dist[index] = alt;
+}
+
+impl PartialOrd for State {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+fn dijkstra(graph: &Graph, source: usize) -> Vec<i32> {
+    let n = graph.matrix.len();
+    let mut dist = vec![i32::MAX; n];
+    dist[source] = 0;
+
+    let mut pq = BinaryHeap::new();
+    pq.push(State {
+        cost: 0,
+        node: source,
+    });
+
+    while let Some(State { cost, node }) = pq.pop() {
+        if cost > dist[node] {
+            continue; // skip if we've found a better path already
+        }
+
+        for (neighbor, &edge_weight) in graph.matrix[node].iter().enumerate() {
+            if edge_weight > 0 && edge_weight != i32::MAX {
+                let next_cost = dist[node].saturating_add(edge_weight);
+                if next_cost < dist[neighbor] {
+                    dist[neighbor] = next_cost;
+                    pq.push(State {
+                        cost: next_cost,
+                        node: neighbor,
+                    });
+                }
             }
         }
     }
@@ -41,25 +69,25 @@ mod tests {
     #[test]
     fn test_dijkstra_single_node() {
         let matrix = vec![vec![0]];
-        assert_eq!(dijkstra(Graph { matrix }, 0), [0]);
+        assert_eq!(dijkstra(&Graph { matrix }, 0), [0]);
     }
 
     #[test]
     fn test_dijkstra_two_nodes() {
         let matrix = vec![vec![0, 2], vec![2, 0]];
-        assert_eq!(dijkstra(Graph { matrix }, 0), [0, 2]);
+        assert_eq!(dijkstra(&Graph { matrix }, 0), [0, 2]);
     }
 
     #[test]
     fn test_dijkstra_three_nodes_linear() {
         let matrix = vec![vec![0, 1, i32::MAX], vec![1, 0, 3], vec![i32::MAX, 3, 0]];
-        assert_eq!(dijkstra(Graph { matrix }, 0), [0, 1, 4]);
+        assert_eq!(dijkstra(&Graph { matrix }, 0), [0, 1, 4]);
     }
 
     #[test]
     fn test_dijkstra_three_nodes_triangle() {
         let matrix = vec![vec![0, 2, 5], vec![2, 0, 1], vec![5, 1, 0]];
-        assert_eq!(dijkstra(Graph { matrix }, 0), [0, 2, 3]);
+        assert_eq!(dijkstra(&Graph { matrix }, 0), [0, 2, 3]);
     }
 
     #[test]
@@ -70,13 +98,13 @@ mod tests {
             vec![2, 1, 0, 8],
             vec![i32::MAX, 5, 8, 0],
         ];
-        assert_eq!(dijkstra(Graph { matrix }, 0), [0, 3, 2, 8]);
+        assert_eq!(dijkstra(&Graph { matrix }, 0), [0, 3, 2, 8]);
     }
 
     #[test]
     fn test_dijkstra_from_different_source() {
         let matrix = vec![vec![0, 1, 4], vec![1, 0, 2], vec![4, 2, 0]];
-        assert_eq!(dijkstra(Graph { matrix }, 1), [1, 0, 2]);
+        assert_eq!(dijkstra(&Graph { matrix }, 1), [1, 0, 2]);
     }
 
     #[test]
@@ -86,7 +114,7 @@ mod tests {
             vec![5, 0, i32::MAX],
             vec![i32::MAX, i32::MAX, 0],
         ];
-        assert_eq!(dijkstra(Graph { matrix }, 0), [0, 5, i32::MAX]);
+        assert_eq!(dijkstra(&Graph { matrix }, 0), [0, 5, i32::MAX]);
     }
 
     #[test]
@@ -98,7 +126,7 @@ mod tests {
             vec![5, i32::MAX, i32::MAX, 0, 2],
             vec![i32::MAX, 7, 1, 2, 0],
         ];
-        assert_eq!(dijkstra(Graph { matrix }, 0), [0, 8, 11, 5, 7]);
+        assert_eq!(dijkstra(&Graph { matrix }, 0), [0, 8, 8, 5, 7]);
     }
 
     #[test]
@@ -109,7 +137,7 @@ mod tests {
             vec![1, 1, 0, 1],
             vec![1, 1, 1, 0],
         ];
-        assert_eq!(dijkstra(Graph { matrix }, 0), [0, 1, 1, 1]);
+        assert_eq!(dijkstra(&Graph { matrix }, 0), [0, 1, 1, 1]);
     }
 
     #[test]
@@ -120,6 +148,6 @@ mod tests {
             vec![4, 1, 0, 2],
             vec![6, 3, 2, 0],
         ];
-        assert_eq!(dijkstra(Graph { matrix }, 0), [0, 2, 3, 5]);
+        assert_eq!(dijkstra(&Graph { matrix }, 0), [0, 2, 3, 5]);
     }
 }
