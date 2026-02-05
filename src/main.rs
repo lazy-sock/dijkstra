@@ -11,7 +11,7 @@ fn dijkstra(graph: Graph, source: i32) -> Vec<i32> {
     let mut dist = vec![]; // current discovered cost of getting to every node
     let mut unvisited: Vec<i32> = vec![];
     for i in 0..graph.matrix.len() {
-        dist.push(100000);
+        dist.push(i32::MAX);
         unvisited.push(i as i32);
     }
     dist[source as usize] = 0;
