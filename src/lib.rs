@@ -54,6 +54,7 @@ pub fn dijkstra(graph: &Graph, source: usize) -> Vec<i32> {
     dist
 }
 
+pub mod duan;
 pub mod graph;
 
 #[cfg(test)]
