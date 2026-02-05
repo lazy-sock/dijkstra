@@ -3,12 +3,6 @@ use crate::graph::get_random_graph;
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 
-fn main() {
-    let graph = get_random_graph();
-    println!("{}", graph);
-    println!("{:?}", dijkstra(&graph, 0));
-}
-
 #[derive(Eq, PartialEq)]
 struct State {
     cost: i32,
@@ -27,7 +21,7 @@ impl PartialOrd for State {
     }
 }
 
-fn dijkstra(graph: &Graph, source: usize) -> Vec<i32> {
+pub fn dijkstra(graph: &Graph, source: usize) -> Vec<i32> {
     let n = graph.matrix.len();
     let mut dist = vec![i32::MAX; n];
     dist[source] = 0;
@@ -60,7 +54,7 @@ fn dijkstra(graph: &Graph, source: usize) -> Vec<i32> {
     dist
 }
 
-mod graph;
+pub mod graph;
 
 #[cfg(test)]
 mod tests {
