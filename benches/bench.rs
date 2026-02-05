@@ -1,4 +1,4 @@
-use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use criterion::{Criterion, criterion_group, criterion_main};
 use dijkstra::{
     dijkstra,
     graph::{Graph, get_random_graph},
