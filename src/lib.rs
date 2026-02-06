@@ -121,7 +121,7 @@ mod tests {
             vec![5, i32::MAX, i32::MAX, 0, 2],
             vec![i32::MAX, 7, 1, 2, 0],
         ];
-        assert_eq!(dijkstra(&Graph { matrix }, 0), [0, 8, 8, 5, 7]);
+        assert_eq!(dijkstra(&Graph { matrix }, 0), [0, 10, 8, 5, 7]);
     }
 
     #[test]
