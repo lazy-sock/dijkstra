@@ -36,9 +36,11 @@ pub fn dijkstra(graph: &Graph, source: usize) -> Vec<i32> {
         if cost > dist[node] {
             continue; // skip if we've found a better path already
         }
+        dbg!(cost, node);
 
         for (neighbor, &edge_weight) in graph.matrix[node].iter().enumerate() {
             if edge_weight > 0 && edge_weight != i32::MAX {
+                dbg!(neighbor, edge_weight);
                 let next_cost = dist[node].saturating_add(edge_weight);
                 if next_cost < dist[neighbor] {
                     dist[neighbor] = next_cost;
@@ -46,6 +48,28 @@ pub fn dijkstra(graph: &Graph, source: usize) -> Vec<i32> {
                         cost: next_cost,
                         node: neighbor,
                     });
+                    dbg!(next_cost);
+                }
+            }
+        }
+    }
+
+    dist
+}
+
+pub fn bellman_ford(graph: &Graph, source: usize) -> Vec<i32> {
+    let n = graph.matrix.len();
+    let mut dist = vec![i32::MAX; n];
+    dist[source] = 0;
+    for _ in 0..n - 1 {
+        for i in 0..n {
+            for (neighbor, &edge_weight) in graph.matrix[i].iter().enumerate() {
+                if edge_weight != 0 && edge_weight != i32::MAX {
+                    dbg!(neighbor, &edge_weight);
+                    if dist[i] + edge_weight < dist[neighbor] {
+                        dist[neighbor] = dist[i] + edge_weight;
+                        dbg!(dist[neighbor]);
+                    }
                 }
             }
         }
@@ -60,6 +84,12 @@ pub mod graph;
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn bellman_three_nodes_linear() {
+        let matrix = vec![vec![0, 1, i32::MAX], vec![1, 0, 3], vec![i32::MAX, 3, 0]];
+        assert_eq!(bellman_ford(&Graph { matrix }, 0), [0, 1, 4]);
+    }
 
     #[test]
     fn test_dijkstra_single_node() {
