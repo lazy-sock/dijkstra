@@ -1,37 +1,13 @@
-use std::fmt;
+// Goal: Create a random generated Graph using petgraph
+use petgraph::graph::DiGraph;
 
-pub struct Graph {
-    pub matrix: Vec<Vec<i32>>,
+pub fn generate_random_graph() {
+    let graph: DiGraph<u32, u32> = DiGraph::from_edges(&[(0, 1), (1, 2), (2, 3), (0, 3)]);
+    dbg!(graph);
 }
 
-impl fmt::Display for Graph {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut matrix = String::from("");
-        for i in &self.matrix {
-            let mut row = String::from("");
-            for j in i {
-                row += &j.to_string();
-            }
-            row += "\n";
-            matrix += &row;
-        }
-        write!(f, "{}", matrix)
-    }
-}
-
-pub fn get_random_graph() -> Graph {
-    let size = rand::random_range(0..10);
-    let mut matrix = vec![];
-    for i in 0..size {
-        let mut row = vec![];
-        for j in 0..size {
-            if i == j {
-                row.push(0);
-            } else {
-                row.push(rand::random_range(0..10));
-            }
-        }
-        matrix.push(row);
-    }
-    Graph { matrix }
+#[cfg(test)]
+#[test]
+fn debug() {
+    generate_random_graph();
 }

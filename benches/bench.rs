@@ -1,13 +1,3 @@
-use criterion::{Criterion, criterion_group, criterion_main};
-use dijkstra::{
-    dijkstra,
-    graph::{Graph, get_random_graph},
-};
-
-fn dijkstra_bench_random(c: &mut Criterion) {
-    let graph = get_random_graph();
-    c.bench_function("dijkstra", |b| b.iter(|| dijkstra(&graph, 0)));
+fn main() {
+    println!("Nothing to see here!");
 }
-
-criterion_group!(benches, dijkstra_bench_random);
-criterion_main!(benches);
